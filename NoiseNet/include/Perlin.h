@@ -7,7 +7,7 @@ public:
 
 	int repeat = -1;
 
-	Perlin(int repeat = -1);
+	//Perlin(int repeat = -1);
 	double perlin(double x, double y, double z);
 	double OctavePerlin(double x, double y, double z, int octaves, double persistence);
 

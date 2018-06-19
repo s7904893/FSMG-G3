@@ -11,11 +11,14 @@ camera input taken from cinder sample 'CaptureBasic'
 #include "cinder/gl/gl.h"
 #include "cinder/Capture.h"
 #include "cinder/Log.h"
+#include "ColorMapper.h"
 #include <cmath>
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+ColorMapper colorMapper;
 
 #if defined( CINDER_ANDROID )
 #define USE_HW_TEXTURE
@@ -82,15 +85,29 @@ void NoiseNetApp::update()
 			/* manipulation start here */
 			Area area(0, 0, 640, 480);
 			Surface::Iter iter = tmpSurface.getIter(area);
+
+			// compute average color once
+			// fetch it several times later
+			//colorMapper.computeAvgColor(&tmpSurface, area);
+			colorMapper.computeAvgMotionColor(&referenceSurface, iter);
+
+			// reset iterator for setting image values
+			iter = tmpSurface.getIter(area);
 			while (iter.line()) {
 				while (iter.pixel()) {
+					
 					// get color values from referenceSurface
 					uint8_t* r = referenceSurface.getDataRed(iter.getPos());
 					uint8_t* g = referenceSurface.getDataGreen(iter.getPos());
 					uint8_t* b = referenceSurface.getDataBlue(iter.getPos());
-
-					// mark pixel as motion if color values drift over threshold
+					
+					// set color for motion values
 					if (abs(iter.r() - *r) > 40 && abs(iter.g() - *g) > 40 && abs(iter.b() - *b) > 40) {
+						iter.r() = colorMapper.getAvgR();
+						iter.g() = colorMapper.getAvgG();
+						iter.b() = colorMapper.getAvgB();
+					// set non motion values to black (for now)
+					} else {
 						iter.r() = 0;
 						iter.g() = 0;
 						iter.b() = 0;

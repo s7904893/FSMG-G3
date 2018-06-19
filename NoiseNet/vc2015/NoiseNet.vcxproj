@@ -195,12 +195,14 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\src\ColorMapper.cpp" />
     <ClCompile Include="..\src\NoiseNetApp.cpp" />
-    <ClCompile Include="Perlin.cpp" />
+    <ClCompile Include="..\src\Perlin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\ColorMapper.h" />
+    <ClInclude Include="..\include\Perlin.h" />
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="Perlin.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

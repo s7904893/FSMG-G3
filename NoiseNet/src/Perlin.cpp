@@ -39,7 +39,7 @@ double Perlin::OctavePerlin(double x, double y, double z, int octaves, double pe
 
 double Perlin::perlin(double x, double y, double z) {
 	if (repeat > 0) {	// If we have any repeat on, change the coordinates to their "local" repetitions
-		x = (int)floor(x) % repeat;
+		x = (int)floor(x) %repeat;
 		y = (int)floor(y) %repeat;
 		z = (int)floor(z) %repeat;
 	}
