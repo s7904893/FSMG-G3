@@ -64,7 +64,7 @@ void NoiseNetApp::update()
 			mTexture = gl::Texture::create(*mCapture->getSurface(), gl::Texture::Format().loadTopDown());
 		}
 		else {
-			if(!referenceSurface.getData()){
+			if (!referenceSurface.getData()) {
 				referenceSurface = *mCapture->getSurface();
 			}
 			// save the next img 
@@ -90,7 +90,7 @@ void NoiseNetApp::update()
 					uint8_t* b = referenceSurface.getDataBlue(iter.getPos());
 
 					// mark pixel as motion if color values drift over threshold
-					if (abs(iter.r() - *r) > 50 && abs(iter.g() - *g) > 50 && abs(iter.b() - *b) > 50) {
+					if (abs(iter.r() - *r) > 40 && abs(iter.g() - *g) > 40 && abs(iter.b() - *b) > 40) {
 						iter.r() = 0;
 						iter.g() = 0;
 						iter.b() = 0;
@@ -101,7 +101,7 @@ void NoiseNetApp::update()
 
 			//tmpSurface = tmpSurface.getDataBlue - surface.getDataBlue;
 			mTexture->update(tmpSurface);
-			
+
 		}
 	}
 #endif
