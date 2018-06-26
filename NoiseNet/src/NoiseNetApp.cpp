@@ -12,13 +12,16 @@ camera input taken from cinder sample 'CaptureBasic'
 #include "cinder/Capture.h"
 #include "cinder/Log.h"
 #include "ColorMapper.h"
+#include "PerlinImpl.h"
 #include <cmath>
+#include "cinder/CameraUi.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
 ColorMapper colorMapper;
+PerlinImpl perlinImpl;
 
 #if defined( CINDER_ANDROID )
 #define USE_HW_TEXTURE
@@ -28,6 +31,7 @@ class NoiseNetApp : public App {
 public:
 	void setup() override;
 	void update() override;
+	void keyDown(KeyEvent event) override;
 	void draw() override;
 
 private:
@@ -37,6 +41,11 @@ private:
 	gl::TextureRef		mTexture;
 	Surface				referenceSurface;	// reference surface without any motion
 	clock_t				cTime = 0;			// time of last referenceSurface taken
+
+	int					netSize = perlinImpl.getNetSize();
+	CameraPersp			mCam;
+	CameraUi			mCamUi;
+	std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 };
 
 void NoiseNetApp::setup()
@@ -51,6 +60,24 @@ void NoiseNetApp::setup()
 	catch (ci::Exception &exc) {
 		CI_LOG_EXCEPTION("Failed to init capture ", exc);
 	}
+
+	//PERLIN
+
+	gl::enableAlphaBlending();
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+
+
+	mCamUi = CameraUi(&mCam, getWindow());
+	mCam.setNearClip(1);
+	mCam.setFarClip(2000);
+	mCam.lookAt(vec3(0, netSize / 2, netSize / 2));
+	mCam.setEyePoint(vec3(15, netSize / 2, netSize / 2));
+
+
+	srand(time(NULL));
+
 }
 
 void NoiseNetApp::update()
@@ -125,28 +152,121 @@ void NoiseNetApp::update()
 
 }
 
+void NoiseNetApp::keyDown(KeyEvent event)
+{
+	switch (event.getChar()) {
+	case '+':
+		if (perlinImpl.getPerlinShiftSpeed() < 8)
+		{
+			float newSpeed = perlinImpl.getPerlinShiftSpeed();
+			perlinImpl.setPerlinShiftSpeed(newSpeed += .25);
+		}
+		break;
+	case '-':
+		if (perlinImpl.getPerlinShiftSpeed() > .25)
+		{
+			float newSpeed = perlinImpl.getPerlinShiftSpeed();
+			perlinImpl.setPerlinShiftSpeed(newSpeed -= .25);
+		}
+		break;
+	case 'w':
+	{
+		if (perlinImpl.getPerlinEffectStrength() < 1.0)
+		{
+			float newStrength = perlinImpl.getPerlinEffectStrength();
+			perlinImpl.setPerlinEffectStrength(newStrength += .1);
+		}
+	}
+	break;
+	case 's':
+		if (perlinImpl.getPerlinEffectStrength() > 0.2)
+		{
+			float newStrength = perlinImpl.getPerlinEffectStrength();
+			perlinImpl.setPerlinEffectStrength(newStrength -= .1);
+		}
+		break;
+	case 'e':
+		if (perlinImpl.getSaturationAdded() < .15)
+		{
+			float newSat = perlinImpl.getSaturationAdded();
+			perlinImpl.setSaturationAdded(newSat += .05);
+		}
+		break;
+	case 'd':
+		if (perlinImpl.getSaturationAdded() > -.5)
+		{
+			float newSat = perlinImpl.getSaturationAdded();
+			perlinImpl.setSaturationAdded(newSat -= .05);
+		}
+		break;
+	}
+}
+
 void NoiseNetApp::draw()
 {
 
+//	gl::clear();
+//
+//	if (mTexture) {
+//		gl::ScopedModelMatrix modelScope;
+//#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+//		// change iphone to landscape orientation
+//		gl::rotate(M_PI / 2);
+//		gl::translate(0, -getWindowWidth());
+//
+//		Rectf flippedBounds(0, 0, getWindowHeight(), getWindowWidth());
+//#if defined( CINDER_ANDROID )
+//		std::swap(flippedBounds.y1, flippedBounds.y2);
+//#endif
+//		gl::draw(mTexture, flippedBounds);
+//#else
+//		gl::draw(mTexture);
+//#endif
+//	}
+
+
+	//PERLINIMPL
 	gl::clear();
 
-	if (mTexture) {
-		gl::ScopedModelMatrix modelScope;
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
-		// change iphone to landscape orientation
-		gl::rotate(M_PI / 2);
-		gl::translate(0, -getWindowWidth());
+	gl::setMatrices(mCam);
 
-		Rectf flippedBounds(0, 0, getWindowHeight(), getWindowWidth());
-#if defined( CINDER_ANDROID )
-		std::swap(flippedBounds.y1, flippedBounds.y2);
-#endif
-		gl::draw(mTexture, flippedBounds);
-#else
-		gl::draw(mTexture);
-#endif
+	std::chrono::high_resolution_clock::time_point timeNow = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::milli> timeSpan = timeNow - startTime;
+
+	float perlinEffectStrength = perlinImpl.getPerlinEffectStrength();
+	float perlinShiftSpeed = perlinImpl.getPerlinShiftSpeed();
+	float saturationAdded = perlinImpl.getSaturationAdded();
+	//vec2 *pointMatrix = perlinImpl.getPointMatrix();
+	Perlin perlinNoise = perlinImpl.getPerlinNoise();
+
+
+	for (int i = 0; i < netSize; i++)
+	{
+		for (int j = 0; j < netSize; j++)
+		{
+			double x = i + perlinEffectStrength * perlinNoise.noise((timeSpan.count() * perlinShiftSpeed / 1000 + i), (timeSpan.count() * perlinShiftSpeed / 1000 + j)) - .5;
+			double y = j + perlinEffectStrength * perlinNoise.noise((timeSpan.count() * perlinShiftSpeed / 1000 + i) + .5, (timeSpan.count() * perlinShiftSpeed / 1000 + j) + .5) - .5;
+			perlinImpl.setPointMatrix(i, j, vec2(x, y));
+			//pointMatrix[i][j].x = i + perlinEffectStrength * perlinNoise.noise((timeSpan.count() * perlinShiftSpeed / 1000 + i), (timeSpan.count() * perlinShiftSpeed / 1000 + j)) - .5;
+			//pointMatrix[i][j].y = j + perlinEffectStrength * perlinNoise.noise((timeSpan.count() * perlinShiftSpeed / 1000 + i) + .5, (timeSpan.count() * perlinShiftSpeed / 1000 + j) + .5) - .5;
+
+		}
 	}
 
+	for (int i = 0; i < netSize; i++)
+	{
+		for (int j = 0; j < netSize; j++)
+		{
+			gl::color(cinder::Color(cinder::ColorModel::CM_HSV, perlinImpl.getColorHSV(i,j).h, perlinImpl.getColorHSV(i, j).s + saturationAdded, perlinImpl.getColorHSV(i,j).v));
+
+			if ((i + 1 < netSize) && (j + 1 < netSize))
+				gl::drawSolidTriangle(perlinImpl.getPointMatrix(i,j), perlinImpl.getPointMatrix(i, j+1), perlinImpl.getPointMatrix(i+1, j));
+
+
+			if ((i - 1 >= 0) && (j - 1 >= 0))
+				gl::drawSolidTriangle(perlinImpl.getPointMatrix(i, j), perlinImpl.getPointMatrix(i, j-1), perlinImpl.getPointMatrix(i-1, j));
+		}
+	}
 }
 
 void NoiseNetApp::printDevices()

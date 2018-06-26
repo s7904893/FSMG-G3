@@ -23,10 +23,13 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\src\Perlin.cpp">
+    <ClCompile Include="..\src\ColorMapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ColorMapper.cpp">
+    <ClCompile Include="..\src\PerlinSelf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PerlinImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,7 +40,10 @@
     <ClInclude Include="..\include\ColorMapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Perlin.h">
+    <ClInclude Include="..\include\PerlinSelf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PerlinImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

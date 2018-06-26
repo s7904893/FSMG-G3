@@ -197,11 +197,13 @@
   <ItemGroup>
     <ClCompile Include="..\src\ColorMapper.cpp" />
     <ClCompile Include="..\src\NoiseNetApp.cpp" />
-    <ClCompile Include="..\src\Perlin.cpp" />
+    <ClCompile Include="..\src\PerlinImpl.cpp" />
+    <ClCompile Include="..\src\PerlinSelf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ColorMapper.h" />
-    <ClInclude Include="..\include\Perlin.h" />
+    <ClInclude Include="..\include\PerlinImpl.h" />
+    <ClInclude Include="..\include\PerlinSelf.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

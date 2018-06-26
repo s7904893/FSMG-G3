@@ -4,7 +4,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-Perlin perlin;
+//Perlin perlin;
 
 ColorMapper::ColorMapper()
 {
