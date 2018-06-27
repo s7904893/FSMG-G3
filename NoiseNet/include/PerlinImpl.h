@@ -56,7 +56,7 @@ private:
 	float perlinEffectStrength = 0.5;
 
 	//speed of moving perlin
-	float perlinShiftSpeed = 1.0;
+	float perlinShiftSpeed = 0.5;
 
 	// saturation manipulator
 	float saturationAdded = 0;

@@ -99,7 +99,7 @@ void NoiseNetApp::update()
 
 			// save new referenceSurface every x milliseconds
 			// this enbables motion detection instead of object detection (!)
-			if (referenceSurface.getData() && clock() - cTime > 10) {
+			if (referenceSurface.getData() && clock() - cTime > 1) {
 				referenceSurface = *mCapture->getSurface();
 				cTime = clock();
 			}
@@ -161,6 +161,18 @@ void NoiseNetApp::update()
 			{
 				for (int j = 0; j < netSize; j++)
 				{
+
+					//// START item wise color calculation
+					//// uncomment to enable
+					//int cs = 640 / netSize;
+					//int rs = 480 / netSize;
+					//Area area(i*cs, j*rs, (i+1)*cs, (j+1)*rs);
+					//colorMapper.computeAvgColor(&referenceSurface, area);
+					//vec3 color = { colorMapper.getAvgR(), colorMapper.getAvgG(), colorMapper.getAvgB() };
+					//Color col = Color(CM_RGB, (color / vec3(255, 255, 255)));
+					//vec3 hsv = colorMapper.RGBtoHSV(col);
+					//// END item wise color calculation
+
 					perlinImpl.setColorHSV(i, j, { hsv[0], perlinImpl.getColorHSV(i,j).s, perlinImpl.getColorHSV(i,j).v });
 					//app::console() << perlinImpl.getColorHSV(i,j).h<<"-"<< perlinImpl.getColorHSV(i, j).s<<"-"<< perlinImpl.getColorHSV(i, j).v << endl;
 				}
