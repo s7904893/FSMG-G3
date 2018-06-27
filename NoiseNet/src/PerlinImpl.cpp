@@ -8,6 +8,9 @@ PerlinImpl::PerlinImpl() {
 			pointMatrix[i][j].x = i;
 			pointMatrix[i][j].y = j;
 
+			//colorsHSV[i][j].h = 242.0 / 360.0;
+			//colorsHSV[i][j].s = randomBetween(.5, .85);
+			//colorsHSV[i][j].v = randomBetween(.8, 1.0);
 			colorsHSV[i][j].h = 242.0 / 360.0;
 			colorsHSV[i][j].s = randomBetween(.5, .85);
 			colorsHSV[i][j].v = randomBetween(.8, 1.0);
@@ -30,7 +33,9 @@ int PerlinImpl::getNetSize() {
 //PerlinImpl::ColorHSV PerlinImpl::getColorsHSV() {
 //	return colorsHSV;
 //}
-
+void PerlinImpl::setColorHSV(int x, int y, ColorHSV color) {
+	colorsHSV[x][y] = color;
+}
 PerlinImpl::ColorHSV PerlinImpl::getColorHSV(int x, int y) {
 	return colorsHSV[x][y];
 }

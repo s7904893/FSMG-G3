@@ -21,6 +21,8 @@ public:
 	int getAvgG();
 	int getAvgB();
 
+	vec3 RGBtoHSV(vec3 rgb);
+
 	void computeAvgColor(Surface *surface, Area area);
 	void computeAvgMotionColor(Surface *referenceSurface, Surface::Iter iter);
 

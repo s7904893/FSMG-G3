@@ -30,21 +30,23 @@ public:
 	int getNetSize();
 	ColorHSV getColorsHSV();
 	ColorHSV getColorHSV(int x, int y);
+	void setColorHSV(int x, int y, ColorHSV color);
 
 	vec2 getPointMatrix(int x, int y);
 	void setPointMatrix(int x, int y, vec2 val);
 
 	float getPerlinEffectStrength();
 	void setPerlinEffectStrength(float strength);
+
 	float getPerlinShiftSpeed();
 	void setPerlinShiftSpeed(float speed);
+	
 	float getSaturationAdded();
 	void setSaturationAdded(float saturation);
+	
 	Perlin getPerlinNoise();
 
 private:
-
-
 
 	static const int netSize = 12;
 	ColorHSV colorsHSV[netSize][netSize];

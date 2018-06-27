@@ -67,14 +67,11 @@ void NoiseNetApp::setup()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
-
-
 	mCamUi = CameraUi(&mCam, getWindow());
 	mCam.setNearClip(1);
 	mCam.setFarClip(2000);
 	mCam.lookAt(vec3(0, netSize / 2, netSize / 2));
 	mCam.setEyePoint(vec3(15, netSize / 2, netSize / 2));
-
 
 	srand(time(NULL));
 
@@ -102,7 +99,7 @@ void NoiseNetApp::update()
 
 			// save new referenceSurface every x milliseconds
 			// this enbables motion detection instead of object detection (!)
-			if (referenceSurface.getData() && clock() - cTime > 500) {
+			if (referenceSurface.getData() && clock() - cTime > 10) {
 				referenceSurface = *mCapture->getSurface();
 				cTime = clock();
 			}
@@ -115,32 +112,61 @@ void NoiseNetApp::update()
 
 			// compute average color once
 			// fetch it several times later
-			//colorMapper.computeAvgColor(&tmpSurface, area);
-			colorMapper.computeAvgMotionColor(&referenceSurface, iter);
+			//colorMapper.computeAvgMotionColor(&referenceSurface, iter); // sets black if no motion
+			colorMapper.computeAvgColor(&referenceSurface, area);
+			//app::console() << colorMapper.getAvgR() << "-" << colorMapper.getAvgG() << "-" << colorMapper.getAvgB() << endl;
 
-			// reset iterator for setting image values
-			iter = tmpSurface.getIter(area);
-			while (iter.line()) {
-				while (iter.pixel()) {
-					
-					// get color values from referenceSurface
-					uint8_t* r = referenceSurface.getDataRed(iter.getPos());
-					uint8_t* g = referenceSurface.getDataGreen(iter.getPos());
-					uint8_t* b = referenceSurface.getDataBlue(iter.getPos());
-					
-					// set color for motion values
-					if (abs(iter.r() - *r) > 40 && abs(iter.g() - *g) > 40 && abs(iter.b() - *b) > 40) {
-						iter.r() = colorMapper.getAvgR();
-						iter.g() = colorMapper.getAvgG();
-						iter.b() = colorMapper.getAvgB();
-					// set non motion values to black (for now)
-					} else {
-						iter.r() = 0;
-						iter.g() = 0;
-						iter.b() = 0;
-					}
+			//// show background substraction output
+			//// set average color for each pixel
+			//// reset iterator for setting image values
+			//iter = tmpSurface.getIter(area);
+			//while (iter.line()) {
+			//	while (iter.pixel()) {
+			//		
+			//		// get color values from referenceSurface
+			//		uint8_t* r = referenceSurface.getDataRed(iter.getPos());
+			//		uint8_t* g = referenceSurface.getDataGreen(iter.getPos());
+			//		uint8_t* b = referenceSurface.getDataBlue(iter.getPos());
+			//		
+			//		// set color for motion values
+			//		if (abs(iter.r() - *r) > 40 && abs(iter.g() - *g) > 40 && abs(iter.b() - *b) > 40) {
+			//			iter.r() = colorMapper.getAvgR();
+			//			iter.g() = colorMapper.getAvgG();
+			//			iter.b() = colorMapper.getAvgB();
+			//		// set non motion values to black (for now)
+			//		} else {
+			//			iter.r() = 0;
+			//			iter.g() = 0;
+			//			iter.b() = 0;
+			//		}
+			//	}
+			//}
+
+			//PERLINIMPL
+			vec3 color = { colorMapper.getAvgR(), colorMapper.getAvgG(), colorMapper.getAvgB()};
+			//app::console() << "0 " << color << endl;
+			//app::console() << "0 " << (color / vec3(255, 255, 255)) << endl;
+			Color col = Color(CM_RGB, (color / vec3(255,255,255)));
+			//cinder::Color col = cinder::Color(cinder::ColorModel::CM_RGB, {color.r/255,color.g/255,color.b/255});
+			//col.set(cinder::ColorModel::CM_HSV, col);
+			//col = cinder::Color(cinder::ColorModel::CM_HSV, col);
+			//rgbToHsv(Colorf(CM_RGB,col));
+
+			// convert RGB to HSV
+			vec3 hsv = colorMapper.RGBtoHSV(col);
+
+			// set color for each item in net
+			// only set Hue, keep old Saturation and Value
+			for (int i = 0; i < netSize; i++)
+			{
+				for (int j = 0; j < netSize; j++)
+				{
+					perlinImpl.setColorHSV(i, j, { hsv[0], perlinImpl.getColorHSV(i,j).s, perlinImpl.getColorHSV(i,j).v });
+					//app::console() << perlinImpl.getColorHSV(i,j).h<<"-"<< perlinImpl.getColorHSV(i, j).s<<"-"<< perlinImpl.getColorHSV(i, j).v << endl;
 				}
 			}
+			
+			
 			/* manipulation end here */
 
 			//tmpSurface = tmpSurface.getDataBlue - surface.getDataBlue;
