@@ -42,6 +42,7 @@ private:
 	Surface				referenceSurface;	// reference surface without any motion
 	clock_t				cTime = 0;			// time of last referenceSurface taken
 
+	// perlin
 	int					netSize = perlinImpl.getNetSize();
 	CameraPersp			mCam;
 	CameraUi			mCamUi;
@@ -67,11 +68,15 @@ void NoiseNetApp::setup()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
+	mCam = ci::CameraPersp();
+	mCam.setEyePoint(vec3(0, 0, 10));
+	mCam.lookAt(vec3(0, 0, 0));
 	mCamUi = CameraUi(&mCam, getWindow());
 	mCam.setNearClip(1);
 	mCam.setFarClip(2000);
-	mCam.lookAt(vec3(0, netSize / 2, netSize / 2));
-	mCam.setEyePoint(vec3(15, netSize / 2, netSize / 2));
+	
+	
+	
 
 	srand(time(NULL));
 
@@ -99,7 +104,7 @@ void NoiseNetApp::update()
 
 			// save new referenceSurface every x milliseconds
 			// this enbables motion detection instead of object detection (!)
-			if (referenceSurface.getData() && clock() - cTime > 1) {
+			if (referenceSurface.getData() && clock() - cTime > 10) {
 				referenceSurface = *mCapture->getSurface();
 				cTime = clock();
 			}
@@ -115,6 +120,7 @@ void NoiseNetApp::update()
 			//colorMapper.computeAvgMotionColor(&referenceSurface, iter); // sets black if no motion
 			colorMapper.computeAvgColor(&referenceSurface, area);
 			//app::console() << colorMapper.getAvgR() << "-" << colorMapper.getAvgG() << "-" << colorMapper.getAvgB() << endl;
+
 
 			//// show background substraction output
 			//// set average color for each pixel
@@ -267,6 +273,10 @@ void NoiseNetApp::draw()
 	gl::clear();
 
 	gl::setMatrices(mCam);
+
+	gl::drawCoordinateFrame();
+
+	gl::translate(vec3(-netSize*0.4f, -netSize*0.5f, 0.0f));
 
 	std::chrono::high_resolution_clock::time_point timeNow = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double, std::milli> timeSpan = timeNow - startTime;

@@ -91,7 +91,6 @@ void ColorMapper::computeAvgColor(Surface *surface, Area area) {
 
 /* compute average color of all motion pixels in an image */
 void ColorMapper::computeAvgMotionColor(Surface *referenceSurface, Surface::Iter iter) {
-
 	//Area area(0, 0, 640, 480);
 	//Surface::Iter iter = tmpSurface.getIter(area);
 	int count = 0;
@@ -117,6 +116,7 @@ void ColorMapper::computeAvgMotionColor(Surface *referenceSurface, Surface::Iter
 			//}
 			//app::console() << iter.r() << " - " << iter.g() << " - " << iter.b() << endl;
 			//app::console() << iter.r()<<" - "<<*r << endl;
+
 			if (abs(iter.r() - *r) > 40 && abs(iter.g() - *g) > 40 && abs(iter.b() - *b) > 40) {
 				if (count == 0) {
 					avgR = iter.r();
