@@ -1,5 +1,4 @@
 #include "PerlinImpl.h"
-#include "cinder/Timeline.h"
 
 PerlinImpl::PerlinImpl() {
 	for (int i = 0; i < netSize; i++)

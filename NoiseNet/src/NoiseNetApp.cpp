@@ -15,6 +15,7 @@ camera input taken from cinder sample 'CaptureBasic'
 #include "PerlinImpl.h"
 #include <cmath>
 #include "cinder/CameraUi.h"
+#include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -305,8 +306,13 @@ void NoiseNetApp::draw()
 	{
 		for (int j = 0; j < netSize; j++)
 		{
+			Anim<Color> animColor = perlinImpl.getColorHSV(i, j);
 			vec3 newCol = perlinImpl.getColorHSV(i, j).get(CM_HSV);
 			newCol.y += saturationAdded;
+			Color endColor;
+			endColor.set(CM_HSV, newCol);
+			timeline().apply(&animColor, endColor, 2.0f, EaseInCubic());
+
 			gl::color(cinder::Color(CM_HSV, newCol));
 
 			if ((i + 1 < netSize) && (j + 1 < netSize))
