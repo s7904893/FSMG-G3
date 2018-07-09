@@ -28,9 +28,9 @@ public:
 	float randomBetween(float smallNumber, float bigNumber);
 
 	int getNetSize();
-	ColorHSV getColorsHSV();
-	ColorHSV getColorHSV(int x, int y);
-	void setColorHSV(int x, int y, ColorHSV color);
+	Color getColorsHSV();
+	Color getColorHSV(int x, int y);
+	void setColorHSV(int x, int y, Color color);
 
 	vec2 getPointMatrix(int x, int y);
 	void setPointMatrix(int x, int y, vec2 val);
@@ -49,7 +49,7 @@ public:
 private:
 
 	static const int netSize = 12;
-	ColorHSV colorsHSV[netSize][netSize];
+	Color colorsHSV[netSize][netSize];
 	vec2 pointMatrix[netSize][netSize];
 
 	// strength of effect

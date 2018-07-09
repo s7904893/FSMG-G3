@@ -179,7 +179,7 @@ void NoiseNetApp::update()
 					//vec3 hsv = colorMapper.RGBtoHSV(col);
 					//// END item wise color calculation
 
-					perlinImpl.setColorHSV(i, j, { hsv[0], perlinImpl.getColorHSV(i,j).s, perlinImpl.getColorHSV(i,j).v });
+					perlinImpl.setColorHSV(i, j, col/*{ hsv[0], perlinImpl.getColorHSV(i,j).s, perlinImpl.getColorHSV(i,j).v }*/);
 					//app::console() << perlinImpl.getColorHSV(i,j).h<<"-"<< perlinImpl.getColorHSV(i, j).s<<"-"<< perlinImpl.getColorHSV(i, j).v << endl;
 				}
 			}
@@ -305,7 +305,9 @@ void NoiseNetApp::draw()
 	{
 		for (int j = 0; j < netSize; j++)
 		{
-			gl::color(cinder::Color(cinder::ColorModel::CM_HSV, perlinImpl.getColorHSV(i,j).h, perlinImpl.getColorHSV(i, j).s + saturationAdded, perlinImpl.getColorHSV(i,j).v));
+			vec3 newCol = perlinImpl.getColorHSV(i, j).get(CM_HSV);
+			newCol.y += saturationAdded;
+			gl::color(cinder::Color(CM_HSV, newCol));
 
 			if ((i + 1 < netSize) && (j + 1 < netSize))
 				gl::drawSolidTriangle(perlinImpl.getPointMatrix(i,j), perlinImpl.getPointMatrix(i, j+1), perlinImpl.getPointMatrix(i+1, j));

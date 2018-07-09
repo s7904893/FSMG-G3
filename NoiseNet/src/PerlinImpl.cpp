@@ -1,4 +1,5 @@
 #include "PerlinImpl.h"
+#include "cinder/Timeline.h"
 
 PerlinImpl::PerlinImpl() {
 	for (int i = 0; i < netSize; i++)
@@ -8,9 +9,7 @@ PerlinImpl::PerlinImpl() {
 			pointMatrix[i][j].x = i;
 			pointMatrix[i][j].y = j;
 
-			colorsHSV[i][j].h = 242.0 / 360.0;
-			colorsHSV[i][j].s = randomBetween(.5, .85);
-			colorsHSV[i][j].v = randomBetween(.8, 1.0);
+			colorsHSV[i][j].set(CM_HSV,  vec3(242.0 / 360.0, randomBetween(.5, .85), randomBetween(.8, 1.0)));
 		}
 	}
 }
@@ -30,10 +29,22 @@ int PerlinImpl::getNetSize() {
 //PerlinImpl::ColorHSV PerlinImpl::getColorsHSV() {
 //	return colorsHSV;
 //}
-void PerlinImpl::setColorHSV(int x, int y, ColorHSV color) {
-	colorsHSV[x][y] = color;
+void PerlinImpl::setColorHSV(int x, int y, Color color) {
+	//colorsHSV[x][y] = color;
+	vec3 newCol = rgbToHsv(color);
+	newCol.y = colorsHSV[x][y].get(CM_HSV).y;
+	newCol.z = colorsHSV[x][y].get(CM_HSV).z;
+	//newCol.y = randomBetween(.5, .85);
+	//newCol.z = randomBetween(.8, 1.0);
+	
+	/*Color c;
+	c.set(CM_HSV, newCol);
+	Anim<Color> oldColor;
+	oldColor = colorsHSV[x][y];
+	timeline().apply(&oldColor, c, 1.0f, EaseInCubic()); */
+	colorsHSV[x][y].set(CM_HSV, newCol);
 }
-PerlinImpl::ColorHSV PerlinImpl::getColorHSV(int x, int y) {
+Color PerlinImpl::getColorHSV(int x, int y) {
 	return colorsHSV[x][y];
 }
 
