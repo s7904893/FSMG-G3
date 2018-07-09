@@ -154,13 +154,6 @@ void NoiseNetApp::update()
 			//app::console() << "0 " << color << endl;
 			//app::console() << "0 " << (color / vec3(255, 255, 255)) << endl;
 			Color col = Color(CM_RGB, (color / vec3(255,255,255)));
-			//cinder::Color col = cinder::Color(cinder::ColorModel::CM_RGB, {color.r/255,color.g/255,color.b/255});
-			//col.set(cinder::ColorModel::CM_HSV, col);
-			//col = cinder::Color(cinder::ColorModel::CM_HSV, col);
-			//rgbToHsv(Colorf(CM_RGB,col));
-
-			// convert RGB to HSV
-			vec3 hsv = colorMapper.RGBtoHSV(col);
 
 			// set color for each item in net
 			// only set Hue, keep old Saturation and Value
@@ -180,8 +173,7 @@ void NoiseNetApp::update()
 					//vec3 hsv = colorMapper.RGBtoHSV(col);
 					//// END item wise color calculation
 
-					perlinImpl.setColorHSV(i, j, col/*{ hsv[0], perlinImpl.getColorHSV(i,j).s, perlinImpl.getColorHSV(i,j).v }*/);
-					//app::console() << perlinImpl.getColorHSV(i,j).h<<"-"<< perlinImpl.getColorHSV(i, j).s<<"-"<< perlinImpl.getColorHSV(i, j).v << endl;
+					perlinImpl.setColorHSV(i, j, col);
 				}
 			}
 			

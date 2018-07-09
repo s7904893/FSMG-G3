@@ -25,22 +25,11 @@ int PerlinImpl::getNetSize() {
 	return netSize;
 }
 
-//PerlinImpl::ColorHSV PerlinImpl::getColorsHSV() {
-//	return colorsHSV;
-//}
 void PerlinImpl::setColorHSV(int x, int y, Color color) {
-	//colorsHSV[x][y] = color;
 	vec3 newCol = rgbToHsv(color);
 	newCol.y = colorsHSV[x][y].get(CM_HSV).y;
 	newCol.z = colorsHSV[x][y].get(CM_HSV).z;
-	//newCol.y = randomBetween(.5, .85);
-	//newCol.z = randomBetween(.8, 1.0);
-	
-	/*Color c;
-	c.set(CM_HSV, newCol);
-	Anim<Color> oldColor;
-	oldColor = colorsHSV[x][y];
-	timeline().apply(&oldColor, c, 1.0f, EaseInCubic()); */
+
 	colorsHSV[x][y].set(CM_HSV, newCol);
 }
 Color PerlinImpl::getColorHSV(int x, int y) {

@@ -40,32 +40,6 @@ int ColorMapper::getAvgB() {
 	return avgB;
 }
 
-/* convert rgb[0..1] to hsv[0..1] */
-vec3 ColorMapper::RGBtoHSV(vec3 rgb) {
-	float r = rgb[0];
-	float g = rgb[1];
-	float b = rgb[2];
-	float h, s, v;
-
-	float K = 0.f;
-	if (g < b)
-	{
-		const float tmp = g; g = b; b = tmp;
-		K = -1.f;
-	}
-	if (r < g)
-	{
-		const float tmp = r; r = g; g = tmp;
-		K = -2.f / 6.f - K;
-	}
-
-	const float chroma = r - (g < b ? g : b);
-	h = fabsf(K + (g - b) / (6.f * chroma + 1e-20f));
-	s = chroma / (r + 1e-20f);
-	v = r;
-	return { h,s,v };
-}
-
 /* compute the average color if a whole image */
 void ColorMapper::computeAvgColor(Surface *surface, Area area) {
 	int r = 0, g = 0, b = 0;

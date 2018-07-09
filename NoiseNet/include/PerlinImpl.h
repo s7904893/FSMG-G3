@@ -17,13 +17,6 @@ class PerlinImpl
 public:
 	PerlinImpl();
 	~PerlinImpl();
-		
-	struct ColorHSV
-	{
-		double h = 0;
-		double s = 0;
-		double v = 0;
-	};
 
 	float randomBetween(float smallNumber, float bigNumber);
 
