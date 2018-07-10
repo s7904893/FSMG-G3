@@ -7,6 +7,7 @@
 #include <time.h>       
 #include <random>
 #include "cinder/Perlin.h"
+#include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -39,11 +40,15 @@ public:
 	
 	Perlin getPerlinNoise();
 
+	Anim<Color> getAnimColor(int x, int y);
+	void setAnimColor(int x, int y, Color c, int t);
+
 private:
 
 	static const int netSize = 12;
 	Color colorsHSV[netSize][netSize];
 	vec2 pointMatrix[netSize][netSize];
+	vector<vector<Anim<Color>>> animColors;
 
 	// strength of effect
 	float perlinEffectStrength = 0.5;

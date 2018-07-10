@@ -42,6 +42,7 @@ private:
 	gl::TextureRef		mTexture;
 	Surface				referenceSurface;	// reference surface without any motion
 	clock_t				cTime = 0;			// time of last referenceSurface taken
+	int					changeTime = 1000;			// time between color change 
 
 	// perlin
 	int					netSize = perlinImpl.getNetSize();
@@ -105,9 +106,16 @@ void NoiseNetApp::update()
 
 			// save new referenceSurface every x milliseconds
 			// this enbables motion detection instead of object detection (!)
-			if (referenceSurface.getData() && clock() - cTime > 10) {
+			if (referenceSurface.getData() && clock() - cTime > changeTime) {
 				referenceSurface = *mCapture->getSurface();
 				cTime = clock();
+				for (int i = 0; i < netSize; i++)
+				{
+					for (int j = 0; j < netSize; j++)
+					{
+						perlinImpl.setAnimColor(i, j, perlinImpl.getColorHSV(i, j), changeTime);
+					}
+				}
 			}
 
 			Surface tmpSurface = *mCapture->getSurface();
@@ -172,8 +180,8 @@ void NoiseNetApp::update()
 					//Color col = Color(CM_RGB, (color / vec3(255, 255, 255)));
 					//vec3 hsv = colorMapper.RGBtoHSV(col);
 					//// END item wise color calculation
-
 					perlinImpl.setColorHSV(i, j, col);
+					
 				}
 			}
 			
@@ -298,14 +306,12 @@ void NoiseNetApp::draw()
 	{
 		for (int j = 0; j < netSize; j++)
 		{
-			Anim<Color> animColor = perlinImpl.getColorHSV(i, j);
-			vec3 newCol = perlinImpl.getColorHSV(i, j).get(CM_HSV);
+			vec3 newCol = perlinImpl.getAnimColor(i, j).value().get(CM_HSV);
 			newCol.y += saturationAdded;
-			Color endColor;
-			endColor.set(CM_HSV, newCol);
-			timeline().apply(&animColor, endColor, 2.0f, EaseInCubic());
 
 			gl::color(cinder::Color(CM_HSV, newCol));
+			//gl::color(cinder::Color(perlinImpl.getAnimColor(i, j)));
+
 
 			if ((i + 1 < netSize) && (j + 1 < netSize))
 				gl::drawSolidTriangle(perlinImpl.getPointMatrix(i,j), perlinImpl.getPointMatrix(i, j+1), perlinImpl.getPointMatrix(i+1, j));

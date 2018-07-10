@@ -3,13 +3,17 @@
 PerlinImpl::PerlinImpl() {
 	for (int i = 0; i < netSize; i++)
 	{
+		vector<Anim<Color>> v;
 		for (int j = 0; j < netSize; j++)
 		{
 			pointMatrix[i][j].x = i;
 			pointMatrix[i][j].y = j;
-
-			colorsHSV[i][j].set(CM_HSV,  vec3(242.0 / 360.0, randomBetween(.5, .85), randomBetween(.8, 1.0)));
+			Anim<Color> c;
+			c.value().set(CM_HSV, vec3(242.0 / 360.0, randomBetween(.5, .85), randomBetween(.8, 1.0)));
+			v.push_back(c);
+			colorsHSV[i][j].set(CM_HSV,  c.value().get(CM_HSV));
 		}
+		animColors.push_back(v);
 	}
 }
 
@@ -31,6 +35,7 @@ void PerlinImpl::setColorHSV(int x, int y, Color color) {
 	newCol.z = colorsHSV[x][y].get(CM_HSV).z;
 
 	colorsHSV[x][y].set(CM_HSV, newCol);
+	//animColors[x][y].value().set(CM_HSV, newCol);
 }
 Color PerlinImpl::getColorHSV(int x, int y) {
 	return colorsHSV[x][y];
@@ -67,4 +72,17 @@ float PerlinImpl::getSaturationAdded() {
 
 Perlin PerlinImpl::getPerlinNoise() {
 	return perlinNoise;
+}
+
+Anim<Color> PerlinImpl::getAnimColor(int x, int y)
+{
+	return animColors[x][y];
+}
+
+void PerlinImpl::setAnimColor(int x, int y, Color c, int t)
+{
+	float ct = (float)t / (float)1000;
+	Color newCol = Color(CM_HSV, vec3(c.get(CM_HSV).x, colorsHSV[x][y].get(CM_HSV).y, colorsHSV[x][y].get(CM_HSV).z));
+	//animColors[x][y] = newCol;
+	timeline().apply(&animColors[x][y], newCol, ct, EaseInCubic());
 }
