@@ -83,6 +83,5 @@ void PerlinImpl::setAnimColor(int x, int y, Color c, int t)
 {
 	float ct = (float)t / (float)1000;
 	Color newCol = Color(CM_HSV, vec3(c.get(CM_HSV).x, colorsHSV[x][y].get(CM_HSV).y, colorsHSV[x][y].get(CM_HSV).z));
-	//animColors[x][y] = newCol;
 	timeline().apply(&animColors[x][y], newCol, ct, EaseInCubic());
 }

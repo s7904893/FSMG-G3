@@ -16,6 +16,7 @@ camera input taken from cinder sample 'CaptureBasic'
 #include <cmath>
 #include "cinder/CameraUi.h"
 #include "cinder/Timeline.h"
+#include "cinder/params/Params.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -49,6 +50,9 @@ private:
 	CameraPersp			mCam;
 	CameraUi			mCamUi;
 	std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+	
+	//params
+	params::InterfaceGlRef	mParams;
 };
 
 void NoiseNetApp::setup()
@@ -82,6 +86,11 @@ void NoiseNetApp::setup()
 
 	srand(time(NULL));
 
+	//Params
+	mParams = params::InterfaceGl::create(getWindow(), "Parameter", toPixels(ivec2(200, 400)));
+
+	// Setup some basic parameters.
+	mParams->addParam("Refresh Rate", &changeTime).min(10).max(10000).keyIncr("t").keyDecr("r");
 }
 
 void NoiseNetApp::update()
@@ -269,7 +278,6 @@ void NoiseNetApp::draw()
 //#endif
 //	}
 
-
 	//PERLINIMPL
 	gl::clear();
 
@@ -310,7 +318,6 @@ void NoiseNetApp::draw()
 			newCol.y += saturationAdded;
 
 			gl::color(cinder::Color(CM_HSV, newCol));
-			//gl::color(cinder::Color(perlinImpl.getAnimColor(i, j)));
 
 
 			if ((i + 1 < netSize) && (j + 1 < netSize))
@@ -321,6 +328,9 @@ void NoiseNetApp::draw()
 				gl::drawSolidTriangle(perlinImpl.getPointMatrix(i, j), perlinImpl.getPointMatrix(i, j-1), perlinImpl.getPointMatrix(i-1, j));
 		}
 	}
+
+	//params
+	mParams->draw();
 }
 
 void NoiseNetApp::printDevices()
